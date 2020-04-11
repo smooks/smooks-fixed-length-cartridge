@@ -9,4 +9,4 @@
 * JDK 8 or higher
 * Maven 3
 
-## [Documentation](https://www.smooks.org/documentation/#Fixed_Length_Values)
+## [Documentation](https://www.smooks.org/documentation/#fixed-length-values)
