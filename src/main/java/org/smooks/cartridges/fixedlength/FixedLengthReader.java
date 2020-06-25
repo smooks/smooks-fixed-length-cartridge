@@ -240,7 +240,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
             Bean bean;
 
             if(bindingType == FixedLengthBindingType.LIST) {
-                Bean listBean = new Bean(ArrayList.class, bindBeanId, "$document");
+                Bean listBean = new Bean(ArrayList.class, bindBeanId, "#document");
 
                 bean = listBean.newBean(bindBeanClass, recordElementName);
                 listBean.bindTo(bean);
@@ -254,7 +254,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
                 assertValidFieldName(bindMapKeyField);
 
-                Bean mapBean = new Bean(LinkedHashMap.class, bindBeanId, "$document");
+                Bean mapBean = new Bean(LinkedHashMap.class, bindBeanId, "#document");
                 Bean recordBean = new Bean(bindBeanClass, RECORD_BEAN, recordElementName);
                 MapBindingWiringVisitor wiringVisitor = new MapBindingWiringVisitor(bindMapKeyField, bindBeanId);
 
