@@ -249,7 +249,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
                 listBean.addVisitors(visitorMap);
             } else if(bindingType == FixedLengthBindingType.MAP) {
                 if(bindMapKeyField == null) {
-                    throw new SmooksConfigurationException("FixedLenght 'MAP' Binding must specify a 'keyField' property on the binding configuration.");
+                    throw new SmooksConfigurationException("FixedLength 'MAP' Binding must specify a 'keyField' property on the binding configuration.");
                 }
 
                 assertValidFieldName(bindMapKeyField);
