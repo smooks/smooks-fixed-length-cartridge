@@ -46,11 +46,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.smooks.SmooksException;
 import org.smooks.cdr.SmooksConfigurationException;
-import org.smooks.cdr.annotation.ConfigParam;
 import org.smooks.container.ExecutionContext;
 import org.smooks.delivery.VisitorAppender;
 import org.smooks.delivery.VisitorConfigMap;
-import org.smooks.delivery.annotation.Initialize;
 import org.smooks.delivery.dom.DOMVisitAfter;
 import org.smooks.delivery.ordering.Consumer;
 import org.smooks.delivery.sax.SAXElement;
@@ -66,15 +64,20 @@ import org.w3c.dom.Element;
 import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.xml.XMLConstants;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -186,49 +189,50 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
     private ContentHandler contentHandler;
 	private ExecutionContext execContext;
 
-    @ConfigParam(name = "fields")
+    @Inject
+    @Named("fields")
     private String[] flFields;
     private Field[] fields;
     private int totalFieldLenght;
 
-    @ConfigParam(defaultVal = "false")
-    private boolean lineNumber;
+    @Inject
+    private Boolean lineNumber = false;
 
-    @ConfigParam(defaultVal = "0")
-    private int skipLines;
+    @Inject
+    private Integer skipLines = 0;
 
-    @ConfigParam(defaultVal = "true")
-    private boolean strict;
+    @Inject
+    private Boolean strict = true;
 
-    @ConfigParam(defaultVal = "UTF-8")
-    private Charset encoding;
+    @Inject
+    private Charset encoding = StandardCharsets.UTF_8;
 
-    @ConfigParam(defaultVal="set")
-    private String rootElementName;
+    @Inject
+    private String rootElementName = "set";
 
-    @ConfigParam(defaultVal="record")
-    private String recordElementName;
+    @Inject
+    private String recordElementName = "record";
 
-    @ConfigParam(defaultVal="number")
-    private String lineNumberAttributeName;
+    @Inject
+    private String lineNumberAttributeName = "number";
 
-    @ConfigParam(defaultVal="truncated")
-    private String truncatedAttributeName;
+    @Inject
+    private String truncatedAttributeName = "truncated";
 
-    @ConfigParam(defaultVal="false")
-    private boolean indent;
+    @Inject
+    private Boolean indent = false;
 
-    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
-    private String bindBeanId;
+    @Inject
+    private Optional<String> bindBeanId;
 
-    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
-    private Class<?> bindBeanClass;
+    @Inject
+    private Optional<Class<?>> bindBeanClass;
 
-    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
-    private FixedLengthBindingType bindingType;
+    @Inject
+    private Optional<FixedLengthBindingType> bindingType;
 
-    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
-    private String bindMapKeyField;
+    @Inject
+    private Optional<String> bindMapKeyField;
 
     private static final String RECORD_BEAN = "flRecordBean";
 
@@ -236,27 +240,27 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
     public void addVisitors(VisitorConfigMap visitorMap) {
     	initialize();
-    	if(bindBeanId != null && bindBeanClass != null) {
+    	if(bindBeanId.isPresent() && bindBeanClass.isPresent()) {
             Bean bean;
 
-            if(bindingType == FixedLengthBindingType.LIST) {
-                Bean listBean = new Bean(ArrayList.class, bindBeanId, "#document");
+            if(bindingType.get().equals(FixedLengthBindingType.LIST)) {
+                Bean listBean = new Bean(ArrayList.class, bindBeanId.get(), "#document");
 
-                bean = listBean.newBean(bindBeanClass, recordElementName);
+                bean = listBean.newBean(bindBeanClass.get(), recordElementName);
                 listBean.bindTo(bean);
                 addFieldBindings(bean);
 
                 listBean.addVisitors(visitorMap);
-            } else if(bindingType == FixedLengthBindingType.MAP) {
-                if(bindMapKeyField == null) {
+            } else if(bindingType.get().equals(FixedLengthBindingType.MAP)) {
+                if(!bindMapKeyField.isPresent()) {
                     throw new SmooksConfigurationException("FixedLength 'MAP' Binding must specify a 'keyField' property on the binding configuration.");
                 }
 
-                assertValidFieldName(bindMapKeyField);
+                assertValidFieldName(bindMapKeyField.get());
 
-                Bean mapBean = new Bean(LinkedHashMap.class, bindBeanId, "#document");
-                Bean recordBean = new Bean(bindBeanClass, RECORD_BEAN, recordElementName);
-                MapBindingWiringVisitor wiringVisitor = new MapBindingWiringVisitor(bindMapKeyField, bindBeanId);
+                Bean mapBean = new Bean(LinkedHashMap.class, bindBeanId.get(), "#document");
+                Bean recordBean = new Bean(bindBeanClass.get(), RECORD_BEAN, recordElementName);
+                MapBindingWiringVisitor wiringVisitor = new MapBindingWiringVisitor(bindMapKeyField.get(), bindBeanId.get());
 
                 addFieldBindings(recordBean);
 
@@ -264,7 +268,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
                 recordBean.addVisitors(visitorMap);
                 visitorMap.addVisitor(wiringVisitor, recordElementName, null, false);
             } else {
-                bean = new Bean(bindBeanClass, bindBeanId, recordElementName);
+                bean = new Bean(bindBeanClass.get(), bindBeanId.get(), recordElementName);
                 addFieldBindings(bean);
 
                 bean.addVisitors(visitorMap);
@@ -289,7 +293,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 		this.execContext = request;
 	}
 
-	@Initialize
+	@PostConstruct
 	public void initialize() {
 		buildFields();
 	}
