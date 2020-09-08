@@ -44,22 +44,24 @@ package org.smooks.cartridges.fixedlength;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smooks.SmooksException;
+import org.smooks.cartridges.javabean.Bean;
 import org.smooks.cdr.SmooksConfigurationException;
+import org.smooks.cdr.registry.Registry;
 import org.smooks.container.ExecutionContext;
+import org.smooks.delivery.ContentHandlerBinding;
+import org.smooks.delivery.Visitor;
 import org.smooks.delivery.VisitorAppender;
-import org.smooks.delivery.VisitorConfigMap;
 import org.smooks.delivery.dom.DOMVisitAfter;
 import org.smooks.delivery.ordering.Consumer;
 import org.smooks.delivery.sax.SAXElement;
 import org.smooks.delivery.sax.SAXVisitAfter;
 import org.smooks.expression.MVELExpressionEvaluator;
 import org.smooks.function.StringFunctionExecutor;
-import org.smooks.cartridges.javabean.Bean;
 import org.smooks.javabean.context.BeanContext;
 import org.smooks.xml.SmooksXMLReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
@@ -74,10 +76,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 /**
@@ -234,23 +233,29 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
     @Inject
     private Optional<String> bindMapKeyField;
 
+    @Inject
+    private Registry registry;
+    
     private static final String RECORD_BEAN = "flRecordBean";
 
     public boolean initialized = false;
 
-    public void addVisitors(VisitorConfigMap visitorMap) {
-    	initialize();
+    @Override
+    public List<ContentHandlerBinding<Visitor>> addVisitors() {
+        List<ContentHandlerBinding<Visitor>> visitorBindings = new ArrayList<>();
+        initialize();
     	if(bindBeanId.isPresent() && bindBeanClass.isPresent()) {
             Bean bean;
 
             if(bindingType.get().equals(FixedLengthBindingType.LIST)) {
                 Bean listBean = new Bean(ArrayList.class, bindBeanId.get(), "#document");
-
+                listBean.setRegistry(registry);
+                
                 bean = listBean.newBean(bindBeanClass.get(), recordElementName);
                 listBean.bindTo(bean);
                 addFieldBindings(bean);
 
-                listBean.addVisitors(visitorMap);
+                visitorBindings.addAll(listBean.addVisitors());
             } else if(bindingType.get().equals(FixedLengthBindingType.MAP)) {
                 if(!bindMapKeyField.isPresent()) {
                     throw new SmooksConfigurationException("FixedLength 'MAP' Binding must specify a 'keyField' property on the binding configuration.");
@@ -259,21 +264,28 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
                 assertValidFieldName(bindMapKeyField.get());
 
                 Bean mapBean = new Bean(LinkedHashMap.class, bindBeanId.get(), "#document");
+                mapBean.setRegistry(registry);
+                
                 Bean recordBean = new Bean(bindBeanClass.get(), RECORD_BEAN, recordElementName);
+                recordBean.setRegistry(registry);
+                
                 MapBindingWiringVisitor wiringVisitor = new MapBindingWiringVisitor(bindMapKeyField.get(), bindBeanId.get());
 
                 addFieldBindings(recordBean);
 
-                mapBean.addVisitors(visitorMap);
-                recordBean.addVisitors(visitorMap);
-                visitorMap.addVisitor(wiringVisitor, recordElementName, null, false);
+                visitorBindings.addAll(mapBean.addVisitors());
+                visitorBindings.addAll(recordBean.addVisitors());
+                visitorBindings.add(new ContentHandlerBinding<>(wiringVisitor, recordElementName, null, registry));
             } else {
                 bean = new Bean(bindBeanClass.get(), bindBeanId.get(), recordElementName);
+                bean.setRegistry(registry);
+                
                 addFieldBindings(bean);
-
-                bean.addVisitors(visitorMap);
+                visitorBindings.addAll(bean.addVisitors());
             }
         }
+    	
+    	return visitorBindings;
     }
 
     private void addFieldBindings(Bean bean) {
