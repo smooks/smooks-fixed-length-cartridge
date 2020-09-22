@@ -2,17 +2,17 @@
 <xs:schema targetNamespace="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd"
            elementFormDefault="qualified"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:smooks="https://www.smooks.org/xsd/smooks-1.2.xsd"
-           xmlns:smooks-fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd">
+           xmlns:smooks="https://www.smooks.org/xsd/smooks-2.0.xsd"
+           xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd">
 
-    <xs:import namespace="https://www.smooks.org/xsd/smooks-1.2.xsd"/>
+    <xs:import namespace="https://www.smooks.org/xsd/smooks-2.0.xsd"/>
 
     <xs:annotation>
         <xs:documentation xml:lang="en">Smooks Fixed Length Reader Configuration</xs:documentation>
     </xs:annotation>
 
 
-    <xs:element name="reader" type="smooks-fl:reader" substitutionGroup="smooks:abstract-reader">
+    <xs:element name="reader" type="fl:reader" substitutionGroup="smooks:abstract-reader">
     	<xs:annotation>
     		<xs:documentation xml:lang="en">
     			Fixed Length Reader Configuration
@@ -29,7 +29,7 @@
     	<xs:complexContent>
     		<xs:extension base="smooks:abstract-reader">
     			<xs:choice minOccurs="0" maxOccurs="1">
-                    <xs:element name="singleBinding" type="smooks-fl:binding" >
+                    <xs:element name="singleBinding" type="fl:binding" >
 				  		<xs:annotation>
 				            <xs:documentation xml:lang="en">
 				                Fixed Length Binding Configuration for a single object.
@@ -40,7 +40,7 @@
 				            </xs:documentation>
 				    	</xs:annotation>
                     </xs:element>
-                    <xs:element name="listBinding" type="smooks-fl:binding" >
+                    <xs:element name="listBinding" type="fl:binding" >
 						<xs:annotation>
 				            <xs:documentation xml:lang="en">
 				                Fixed Length Binding Configuration for a list of objects.
@@ -51,7 +51,7 @@
 				            </xs:documentation>
 				    	</xs:annotation>
                     </xs:element>
-                    <xs:element name="mapBinding" type="smooks-fl:mapBinding" >
+                    <xs:element name="mapBinding" type="fl:mapBinding" >
 						<xs:annotation>
 				            <xs:documentation xml:lang="en">
 				                Fixed Length Binding Configuration for a map of objects.
@@ -187,7 +187,7 @@
             </xs:documentation>
     	</xs:annotation>
     	<xs:complexContent>
-    		<xs:extension base="smooks-fl:binding">
+    		<xs:extension base="fl:binding">
                 <xs:attribute name="keyField" type="xs:string" use="required">
                     <xs:annotation>
                         <xs:documentation xml:lang="en">
