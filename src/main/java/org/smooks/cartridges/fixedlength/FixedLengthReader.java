@@ -49,18 +49,16 @@ import org.slf4j.LoggerFactory;
 import org.smooks.SmooksException;
 import org.smooks.cartridges.javabean.Bean;
 import org.smooks.cdr.SmooksConfigurationException;
-import org.smooks.cdr.registry.Registry;
 import org.smooks.container.ExecutionContext;
 import org.smooks.delivery.ContentHandlerBinding;
 import org.smooks.delivery.Visitor;
 import org.smooks.delivery.VisitorAppender;
-import org.smooks.delivery.dom.DOMVisitAfter;
 import org.smooks.delivery.ordering.Consumer;
-import org.smooks.delivery.sax.SAXElement;
-import org.smooks.delivery.sax.SAXVisitAfter;
+import org.smooks.delivery.sax.ng.AfterVisitor;
 import org.smooks.expression.MVELExpressionEvaluator;
 import org.smooks.function.StringFunctionExecutor;
 import org.smooks.javabean.context.BeanContext;
+import org.smooks.registry.Registry;
 import org.smooks.xml.SmooksXMLReader;
 import org.w3c.dom.Element;
 import org.xml.sax.*;
@@ -601,21 +599,18 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 		}
     }
 
-    private class MapBindingWiringVisitor implements DOMVisitAfter, SAXVisitAfter, Consumer {
+    private static class MapBindingWiringVisitor implements AfterVisitor, Consumer {
 
-        private MVELExpressionEvaluator keyExtractor = new MVELExpressionEvaluator();
-        private String mapBindingKey;
+        private final MVELExpressionEvaluator keyExtractor = new MVELExpressionEvaluator();
+        private final String mapBindingKey;
 
         private MapBindingWiringVisitor(String bindKeyField, String mapBindingKey) {
             keyExtractor.setExpression(RECORD_BEAN + "." + bindKeyField);
             this.mapBindingKey = mapBindingKey;
         }
-
+        
+        @Override
         public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-            wireObject(executionContext);
-        }
-
-        public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
             wireObject(executionContext);
         }
 

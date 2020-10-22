@@ -43,7 +43,10 @@
   -->
 
 <smooks-resource-list xmlns="https://www.smooks.org/xsd/smooks-2.0.xsd" xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd">
-
+    <resource-config selector="global-parameters">
+        <param name="close.empty.elements">true</param>
+    </resource-config>
+    
     <fl:reader fields="first[2],second[3],third[4]" strict="false"/>
 
 </smooks-resource-list>

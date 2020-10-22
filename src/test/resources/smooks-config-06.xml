@@ -44,6 +44,10 @@
 
 <smooks-resource-list xmlns="https://www.smooks.org/xsd/smooks-2.0.xsd" xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd">
 
+    <resource-config selector="global-parameters" target-profile="*">
+        <param name="close.empty.elements">true</param>
+    </resource-config>
+    
     <profiles>
 		<profile base-profile="A" />
 		<profile base-profile="B" />
