@@ -43,13 +43,11 @@
 package org.smooks.cartridges.fixedlength;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
-import org.smooks.FilterSettings;
 import org.smooks.Smooks;
 import org.smooks.SmooksUtil;
+import org.smooks.cdr.ParameterAccessor;
 import org.smooks.container.ExecutionContext;
+import org.smooks.delivery.Filter;
 import org.smooks.payload.JavaResult;
 
 import javax.xml.transform.stream.StreamSource;
@@ -57,37 +55,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
 public class FixedLenghtReaderTest {
     @Test
-    public void test_01_xml_dom_map_binding() throws Exception {
-        test_01_xml_map_binding(FilterSettings.DEFAULT_DOM);
-    }
-
-    @Test
-    public void test_01_xml_sax_map_binding() throws Exception {
-        test_01_xml_map_binding(FilterSettings.DEFAULT_SAX);
-    }
-
-    @Test
-    public void test_01_programmatic_dom_map_binding() throws Exception {
-        test_01_programmatic_map_binding(FilterSettings.DEFAULT_DOM);
-    }
-
-    @Test
-    public void test_01_programmatic_sax_map_binding() throws Exception {
-        test_01_programmatic_map_binding(FilterSettings.DEFAULT_SAX);
-    }
-
-    public void test_01_xml_map_binding(FilterSettings filterSettings) throws Exception {
+    public void test_01_xml_map_binding() throws Exception {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("/smooks-config-01-map.xml"));
-        smooks.setFilterSettings(filterSettings);
         test_01_map_binding(smooks);
     }
 
-    public void test_01_programmatic_map_binding(FilterSettings filterSettings) throws Exception {
+    @Test
+    public void test_01_programmatic_map_binding() throws Exception {
         Smooks smooks = new Smooks();
 
         smooks.setReaderConfig(new FixedLengthReaderConfigurator(
@@ -95,9 +76,7 @@ public class FixedLenghtReaderTest {
                 .setBinding(
                         new FixedLengthBinding("people", HashMap.class, FixedLengthBindingType.MAP)
                                 .setKeyField("firstname")));
-
-        smooks.setFilterSettings(filterSettings);
-
+        
         test_01_map_binding(smooks);
     }
 
@@ -127,7 +106,6 @@ public class FixedLenghtReaderTest {
     @Test
     public void test_01_xml_list_binding() throws Exception {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("/smooks-config-01-list.xml"));
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         test_01_list_binding(smooks);
     }
 
@@ -138,9 +116,7 @@ public class FixedLenghtReaderTest {
         smooks.setReaderConfig(new FixedLengthReaderConfigurator(
                 "firstname[10].right_trim,lastname[10].trim.capitalize,$ignore$[2],gender[1],age[3],country[3]lower_case")
                 .setBinding(new FixedLengthBinding("people", HashMap.class, FixedLengthBindingType.LIST)));
-
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
-
+        
         test_01_list_binding(smooks);
     }
 
@@ -170,7 +146,6 @@ public class FixedLenghtReaderTest {
     @Test
     public void test_01_xml_single_binding() throws Exception {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("/smooks-config-01-single.xml"));
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         test_01_single_binding(smooks);
     }
 
@@ -181,9 +156,7 @@ public class FixedLenghtReaderTest {
         smooks.setReaderConfig(new FixedLengthReaderConfigurator(
                 "firstname[10].right_trim,lastname[10].trim.capitalize,$ignore$[2],gender[1],age[3],country[3]lower_case")
                 .setBinding(new FixedLengthBinding("person", HashMap.class, FixedLengthBindingType.SINGLE)));
-
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
-
+        
         test_01_single_binding(smooks);
     }
 
@@ -204,7 +177,6 @@ public class FixedLenghtReaderTest {
     @Test
     public void test_02_xml_skip_lines_line_number() throws Exception {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("/smooks-config-02.xml"));
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         test_02(smooks);
     }
 
@@ -216,9 +188,7 @@ public class FixedLenghtReaderTest {
                 "first[2],second[3],third[4]")
                 .setSkipLines(2)
                 .setLineNumber(true));
-
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
-
+        
         test_02(smooks);
     }
 
@@ -233,7 +203,6 @@ public class FixedLenghtReaderTest {
     @Test
     public void test_03_xml_element_names() throws Exception {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("/smooks-config-03.xml"));
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         test_03(smooks);
     }
 
@@ -246,9 +215,7 @@ public class FixedLenghtReaderTest {
                 .setRootElementName("root-element")
                 .setRecordElementName("record-element")
         );
-
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
-
+        
         test_03(smooks);
     }
 
@@ -263,21 +230,19 @@ public class FixedLenghtReaderTest {
     @Test
     public void test_04_xml_truncate() throws Exception {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("/smooks-config-04-truncate.xml"));
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         test_04_truncate(smooks);
     }
 
     @Test
     public void test_04_programmatic_truncate() throws Exception {
         Smooks smooks = new Smooks();
+        ParameterAccessor.setParameter(Filter.CLOSE_EMPTY_ELEMENTS, "true", smooks);
 
         smooks.setReaderConfig(new FixedLengthReaderConfigurator(
                 "first[2],second[3],third[4]")
                 .setStrict(false)
         );
-
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
-
+        
         test_04_truncate(smooks);
     }
 
@@ -292,14 +257,14 @@ public class FixedLenghtReaderTest {
     @Test
     public void test_04_xml_truncate_line_number_diff_name() throws Exception {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("/smooks-config-04-truncate-line-number-diff-name.xml"));
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         test_04_truncate_line_number_diff_name(smooks);
     }
 
     @Test
     public void test_04_programmatic_truncate_line_number_diff_name() throws Exception {
         Smooks smooks = new Smooks();
-
+        ParameterAccessor.setParameter(Filter.CLOSE_EMPTY_ELEMENTS, "true", smooks);
+        
         smooks.setReaderConfig(new FixedLengthReaderConfigurator(
                 "first[2],second[3],third[4]")
                 .setStrict(false)
@@ -307,9 +272,7 @@ public class FixedLenghtReaderTest {
                 .setLineNumberAttributeName("nr")
                 .setTruncatedAttributeName("trunc")
         );
-
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
-
+        
         test_04_truncate_line_number_diff_name(smooks);
     }
 
@@ -324,7 +287,6 @@ public class FixedLenghtReaderTest {
     @Test
     public void test_04_xml_strict() throws Exception {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("/smooks-config-04-strict.xml"));
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         test_04_strict(smooks);
     }
 
@@ -335,9 +297,7 @@ public class FixedLenghtReaderTest {
         smooks.setReaderConfig(new FixedLengthReaderConfigurator(
                 "first[2],second[3],third[4]")
         );
-
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
-
+        
         test_04_strict(smooks);
     }
 
@@ -352,7 +312,6 @@ public class FixedLenghtReaderTest {
     @Test
     public void test_05_xml_indent() throws Exception {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("/smooks-config-05.xml"));
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         test_05_indent(smooks);
     }
 
@@ -364,9 +323,7 @@ public class FixedLenghtReaderTest {
                 "first[2],second[3],third[4]")
                 .setIndent(true)
         );
-
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
-
+        
         test_05_indent(smooks);
     }
 
@@ -394,7 +351,6 @@ public class FixedLenghtReaderTest {
     @Test
     public void test_06_xml_profiles() throws Exception {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("/smooks-config-06.xml"));
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         test_06_profiles(smooks);
     }
 

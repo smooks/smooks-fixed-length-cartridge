@@ -42,7 +42,6 @@
  */
 package org.smooks.cartridges.fixedlength.prog;
 
-import org.smooks.FilterSettings;
 import org.smooks.Smooks;
 import org.smooks.assertion.AssertArgument;
 import org.smooks.cartridges.fixedlength.FixedLengthBinding;
@@ -87,7 +86,6 @@ public class FixedLengthListBinder {
         AssertArgument.isNotNull(recordType, "recordType");
 
         smooks = new Smooks();
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         smooks.setReaderConfig(new FixedLengthReaderConfigurator(fields)
                 .setBinding(new FixedLengthBinding(beanId, recordType, FixedLengthBindingType.LIST)));
     }

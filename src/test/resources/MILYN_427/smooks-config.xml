@@ -43,10 +43,6 @@
   -->
 
 <smooks-resource-list xmlns="https://www.smooks.org/xsd/smooks-2.0.xsd" xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd" xmlns:javabean="https://www.smooks.org/xsd/smooks/javabean-1.6.xsd">
-	<params>
-		<param name="stream.filter.type">SAX</param>
-	</params>
-
 	<fl:reader fields="lastname[15].trim,firstname[15].trim,email[30].trim" lineNumber="true" strict="false"/>
 
 	<javabean:bean beanId="Data" class="org.smooks.cartridges.fixedlength.MILYN_427.Data" createOnElement="/set/record">
