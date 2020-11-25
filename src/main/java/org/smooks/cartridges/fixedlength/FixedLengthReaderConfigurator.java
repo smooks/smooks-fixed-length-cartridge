@@ -46,7 +46,7 @@ import org.smooks.GenericReaderConfigurator;
 import org.smooks.ReaderConfigurator;
 import org.smooks.assertion.AssertArgument;
 import org.smooks.cdr.SmooksConfigurationException;
-import org.smooks.cdr.SmooksResourceConfiguration;
+import org.smooks.cdr.ResourceConfig;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -139,7 +139,7 @@ public class FixedLengthReaderConfigurator implements ReaderConfigurator {
         return this;
     }
 
-    public List<SmooksResourceConfiguration> toConfig() {
+    public List<ResourceConfig> toConfig() {
         GenericReaderConfigurator configurator = new GenericReaderConfigurator(FixedLengthReader.class);
 
         configurator.getParameters().setProperty("fields", fields);
