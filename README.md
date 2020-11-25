@@ -2,7 +2,7 @@
 
 ![Maven Central](https://img.shields.io/maven-central/v/org.smooks.cartridges/smooks-fixed-length-cartridge)
 ![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/org.smooks.cartridges/smooks-fixed-length-cartridge?server=https%3A%2F%2Foss.sonatype.org)
-[![Build Status](https://travis-ci.org/smooks/smooks-fixed-length-cartridge.svg?branch=master)](https://travis-ci.org/smooks/smooks-fixed-length-cartridge)
+![Build Status](https://github.com/smooks/smooks-fixed-length-cartridge/workflows/CI/badge.svg)
 
 ## Build Requirements
 
