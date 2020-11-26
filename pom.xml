@@ -6,7 +6,7 @@
 
     <groupId>org.smooks.cartridges</groupId>
     <artifactId>smooks-fixed-length-cartridge</artifactId>
-    <version>2.0.0-M2-SNAPSHOT</version>
+    <version>2.0.0-M2</version>
 
     <name>Smooks Fixed-Length Cartridge</name>
     <url>https://www.smooks.org</url>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.smooks.cartridges</groupId>
             <artifactId>smooks-javabean-cartridge</artifactId>
-            <version>2.0.0-M2-SNAPSHOT</version>
+            <version>2.0.0-M2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -191,7 +191,7 @@
     <repositories>
         <repository>
             <id>oss.sonatype.org-snapshot</id>
-            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -204,7 +204,7 @@
     <distributionManagement>
         <repository>
             <id>ossrh</id>
-            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
         <snapshotRepository>
             <id>ossrh</id>
