@@ -49,8 +49,8 @@
     </resource-config>
     
     <profiles>
-		<profile base-profile="A" />
-		<profile base-profile="B" />
+		<profile base-profile="A"/>
+		<profile base-profile="B"/>
 	</profiles>
 
     <fl:reader fields="first[2],second[3]" targetProfile="A"/>

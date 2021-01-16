@@ -44,6 +44,6 @@
 
 <smooks-resource-list xmlns="https://www.smooks.org/xsd/smooks-2.0.xsd" xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd">
 
-    <fl:reader fields="first[2],second[3],third[4]" rootElementName="root-element" recordElementName="record-element" />
+    <fl:reader fields="first[2],second[3],third[4]" rootElementName="root-element" recordElementName="record-element"/>
 
 </smooks-resource-list>

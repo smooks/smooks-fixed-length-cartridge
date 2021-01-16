@@ -250,7 +250,7 @@ public class FixedLenghtReaderTest {
         ExecutionContext context = smooks.createExecutionContext();
         String result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("/input-message-04.txt"), smooks);
 
-        String expected = "<set><record><first>aa</first><second>bbb</second><third>cccc</third></record><record truncated=\"true\"><first>dd</first><second truncated=\"true\" /><third truncated=\"true\" /></record></set>";
+        String expected = "<set><record><first>aa</first><second>bbb</second><third>cccc</third></record><record truncated=\"true\"><first>dd</first><second truncated=\"true\"/><third truncated=\"true\"/></record></set>";
         assertEquals(expected, result);
     }
 
@@ -280,7 +280,7 @@ public class FixedLenghtReaderTest {
         ExecutionContext context = smooks.createExecutionContext();
         String result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("/input-message-04.txt"), smooks);
 
-        String expected = "<set><record nr=\"1\"><first>aa</first><second>bbb</second><third>cccc</third></record><record nr=\"2\" trunc=\"true\"><first>dd</first><second trunc=\"true\" /><third trunc=\"true\" /></record></set>";
+        String expected = "<set><record nr=\"1\"><first>aa</first><second>bbb</second><third>cccc</third></record><record nr=\"2\" trunc=\"true\"><first>dd</first><second trunc=\"true\"/><third trunc=\"true\"/></record></set>";
         assertEquals(expected, result);
     }
 
@@ -366,7 +366,7 @@ public class FixedLenghtReaderTest {
 
         result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("/input-message-06.txt"), smooks);
 
-        expected = "<set><record truncated=\"true\"><first>aa</first><second>bbb</second><third truncated=\"true\" /></record></set>";
+        expected = "<set><record truncated=\"true\"><first>aa</first><second>bbb</second><third truncated=\"true\"/></record></set>";
         assertEquals(expected, result);
     }
 }
