@@ -46,20 +46,21 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smooks.SmooksException;
+import org.smooks.api.ExecutionContext;
+import org.smooks.api.Registry;
+import org.smooks.api.SmooksConfigException;
+import org.smooks.api.SmooksException;
+import org.smooks.api.bean.context.BeanContext;
+import org.smooks.api.delivery.ContentHandlerBinding;
+import org.smooks.api.delivery.VisitorAppender;
+import org.smooks.api.delivery.ordering.Consumer;
+import org.smooks.api.resource.reader.SmooksXMLReader;
+import org.smooks.api.resource.visitor.Visitor;
+import org.smooks.api.resource.visitor.sax.ng.AfterVisitor;
+import org.smooks.cartridges.flatfile.function.StringFunctionExecutor;
 import org.smooks.cartridges.javabean.Bean;
-import org.smooks.cdr.SmooksConfigurationException;
-import org.smooks.container.ExecutionContext;
-import org.smooks.delivery.ContentHandlerBinding;
-import org.smooks.delivery.Visitor;
-import org.smooks.delivery.VisitorAppender;
-import org.smooks.delivery.ordering.Consumer;
-import org.smooks.delivery.sax.ng.AfterVisitor;
-import org.smooks.expression.MVELExpressionEvaluator;
-import org.smooks.function.StringFunctionExecutor;
-import org.smooks.javabean.context.BeanContext;
-import org.smooks.registry.Registry;
-import org.smooks.xml.SmooksXMLReader;
+import org.smooks.engine.delivery.DefaultContentHandlerBinding;
+import org.smooks.engine.expression.MVELExpressionEvaluator;
 import org.w3c.dom.Element;
 import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
@@ -256,7 +257,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
                 visitorBindings.addAll(listBean.addVisitors());
             } else if(bindingType.get().equals(FixedLengthBindingType.MAP)) {
                 if(!bindMapKeyField.isPresent()) {
-                    throw new SmooksConfigurationException("FixedLength 'MAP' Binding must specify a 'keyField' property on the binding configuration.");
+                    throw new SmooksConfigException("FixedLength 'MAP' Binding must specify a 'keyField' property on the binding configuration.");
                 }
 
                 assertValidFieldName(bindMapKeyField.get());
@@ -273,7 +274,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
                 visitorBindings.addAll(mapBean.addVisitors());
                 visitorBindings.addAll(recordBean.addVisitors());
-                visitorBindings.add(new ContentHandlerBinding<>(wiringVisitor, recordElementName, null, registry));
+                visitorBindings.add(new DefaultContentHandlerBinding<>(wiringVisitor, recordElementName, null, registry));
             } else {
                 bean = new Bean(bindBeanClass.get(), bindBeanId.get(), recordElementName);
                 bean.setRegistry(registry);
@@ -472,7 +473,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
             }
         }
 
-        throw new SmooksConfigurationException("Invalid field name '" + fieldName + "'.  Valid names: [" + fieldNames + "].");
+        throw new SmooksConfigException("Invalid field name '" + fieldName + "'.  Valid names: [" + fieldNames + "].");
     }
 
 	private void buildFields() {

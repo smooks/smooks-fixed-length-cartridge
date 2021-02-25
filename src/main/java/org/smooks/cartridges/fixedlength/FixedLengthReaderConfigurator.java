@@ -42,11 +42,11 @@
  */
 package org.smooks.cartridges.fixedlength;
 
-import org.smooks.GenericReaderConfigurator;
-import org.smooks.ReaderConfigurator;
+import org.smooks.api.SmooksConfigException;
+import org.smooks.api.resource.config.ReaderConfigurator;
+import org.smooks.api.resource.config.ResourceConfig;
 import org.smooks.assertion.AssertArgument;
-import org.smooks.cdr.SmooksConfigurationException;
-import org.smooks.cdr.ResourceConfig;
+import org.smooks.engine.resource.config.GenericReaderConfigurator;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -159,7 +159,7 @@ public class FixedLengthReaderConfigurator implements ReaderConfigurator {
             configurator.getParameters().setProperty("bindingType", binding.getBindingType().toString());
             if(binding.getBindingType() == FixedLengthBindingType.MAP) {
                 if(binding.getKeyField() == null) {
-                    throw new SmooksConfigurationException("Fixed length 'MAP' Binding must specify a 'keyField' property on the binding configuration.");
+                    throw new SmooksConfigException("Fixed length 'MAP' Binding must specify a 'keyField' property on the binding configuration.");
                 }
                 configurator.getParameters().setProperty("bindMapKeyField", binding.getKeyField());
             }
