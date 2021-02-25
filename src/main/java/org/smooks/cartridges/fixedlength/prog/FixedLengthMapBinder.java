@@ -47,7 +47,7 @@ import org.smooks.assertion.AssertArgument;
 import org.smooks.cartridges.fixedlength.FixedLengthBinding;
 import org.smooks.cartridges.fixedlength.FixedLengthBindingType;
 import org.smooks.cartridges.fixedlength.FixedLengthReaderConfigurator;
-import org.smooks.payload.JavaResult;
+import org.smooks.io.payload.JavaResult;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;

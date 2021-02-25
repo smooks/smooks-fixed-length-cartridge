@@ -44,11 +44,11 @@ package org.smooks.cartridges.fixedlength;
 
 import org.junit.Test;
 import org.smooks.Smooks;
-import org.smooks.SmooksUtil;
-import org.smooks.cdr.ParameterAccessor;
-import org.smooks.container.ExecutionContext;
-import org.smooks.delivery.Filter;
-import org.smooks.payload.JavaResult;
+import org.smooks.api.ExecutionContext;
+import org.smooks.api.delivery.Filter;
+import org.smooks.engine.resource.config.ParameterAccessor;
+import org.smooks.io.payload.JavaResult;
+import org.smooks.support.SmooksUtil;
 
 import javax.xml.transform.stream.StreamSource;
 import java.util.HashMap;
