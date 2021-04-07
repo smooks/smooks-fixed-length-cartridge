@@ -66,7 +66,7 @@ public class FixedLengthReaderConfigurator implements ReaderConfigurator {
     private Charset encoding = Charset.forName("UTF-8");
     private String rootElementName = "set";
     private String recordElementName = "record";
-   private String lineNumberAttributeName = "number";
+    private String lineNumberAttributeName = "number";
     private String truncatedAttributeName = "truncated";
     private FixedLengthBinding binding;
     private String targetProfile;
