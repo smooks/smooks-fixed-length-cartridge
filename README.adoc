@@ -1,0 +1,270 @@
+= Smooks Fixed Length Cartridge
+
+image:https://img.shields.io/maven-central/v/org.smooks.cartridges/smooks-fixed-length-cartridge[Maven Central]
+image:https://img.shields.io/nexus/s/org.smooks.cartridges/smooks-fixed-length-cartridge?server=https%3A%2F%2Foss.sonatype.org[Sonatype Nexus (Snapshots)]
+image:https://github.com/smooks/smooks-fixed-length-cartridge/workflows/CI/badge.svg[Build Status]
+
+// tag::smooks-fixed-length-cartridge[]
+A simple/basic fixed-length reader configuration:
+
+.smooks-config.xml
+[source,xml]
+----
+<?xml version="1.0"?>  
+<smooks-resource-list xmlns="https://www.smooks.org/xsd/smooks-2.0.xsd"
+                      xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd">  
+
+    <!-- Configure the Fixed length to parse the message into a stream of SAX events. -->  
+    <fl:reader fields="firstname[10],lastname[10],gender[1],age[2],country[2]" skipLines="1" />  
+
+</smooks-resource-list>
+----
+
+Example input file:
+
+....
+#HEADER  
+Tom       Fennelly  M 21 IE  
+Maurice  Zeijen     M 27 NL
+....
+
+The above configuration will generate an event stream of the form:
+
+[source,xml]
+----
+<set>  
+    <record>  
+        <firstname>Tom       </firstname>  
+        <lastname>Fennelly  </lastname>  
+        <gender>M</gender>  
+        <age> 21</age>  
+        <country>IE</country>  
+    </record>  
+    <record>  
+        <firstname>Maurice  </firstname>  
+        <lastname>Zeijen     </lastname>  
+        <gender>M</gender>  
+        <age>27</age>  
+        <country>NL</country>  
+    </record>  
+</set>
+----
+
+== Defining fields
+
+Fields are defined in the 'fields' attribute as a comma separated list
+of names and field lengths. The field lengths must be defined between
+the brackets after the field name (see the example above).
+
+The field names must follow the same naming rules like XML element
+names:
+
+* Names can contain letters, numbers, and other characters
+* Names cannot start with a number or punctuation character
+* Names cannot start with the letters xml (or XML, or Xml, etc...)
+* Names cannot contain spaces
+
+By setting the `+rootElementName+` and `+recordElementName+` attributes you
+can modify the and element names. The same naming rules apply for these
+names.
+
+=== String manipulation functions
+
+String manipulation functions can be defined per field. These functions
+are executed before that the data is converted into SAX events. The
+functions are defined after the field length definitions and are
+optionally separated with a question mark.
+
+[source,xml]
+----
+<?xml version="1.0"?>  
+<smooks-resource-list xmlns="https://www.smooks.org/xsd/smooks-2.0.xsd"
+                      xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd">  
+
+    <!-- Configure the fixed length reader to parse the message into a stream of SAX events.  -->  
+    <fl:reader fields="firstname[10]?trim,lastname[10]trim.capitalize,gender[1],age[2],country[2]" skipLines="1" />  
+
+</smooks-resource-list>
+----
+
+Take a look at the link:#string-manipulation-functions-for-readers[#String manipulation functions for readers] chapter for the available functions and how the functions can be chained.
+
+=== Ignoring Fields
+
+Characters ranges of a fixed length record can be ignored by specifying
+the `+$ignore$[10]+` token in the fields configuration value. You must
+specify the number of characters that need be ignored, just as a normal
+field.
+
+.smooks-config.xml
+[source,xml]
+----
+<?xml version="1.0"?>  
+<smooks-resource-list xmlns="https://www.smooks.org/xsd/smooks-2.0.xsd"
+                      xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd">  
+
+    <fl:reader fields="firstname,$ignore$[2],age,$ignore$[10]" />  
+
+</smooks-resource-list>
+----
+
+== Binding fixed length Records to Java
+
+Smooks v1.2 has added support for making the binding of fixed length
+records to Java Objects a very trivial task. You don't need to use the
+Javabean Cartridge directly (i.e. Smooks main Java binding
+functionality).
+
+A Persons fixed length record set such as:
+
+....
+Tom       Fennelly  M 21 IE  
+Maurice  Zeijen     M 27 NL
+....
+
+Can be bound to a Person of (no getters/setters):
+
+.Person.java
+[source,java]
+----
+public class Person {  
+    private String firstname;
+    private String lastname;
+    private String country;
+    private String gender;
+    private int age;  
+}
+----
+
+Using a config of the form:
+
+.smooks-config.xml
+[source,xml]
+----
+<?xml version="1.0"?>  
+<smooks-resource-list xmlns="https://www.smooks.org/xsd/smooks-2.0.xsd"  
+                      xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd">  
+
+    <fl:reader fields="firstname[10]?trim,lastname[10]?trim,gende[1],age[3]?trim,country[2]">  
+        <!-- Note how the field names match the property names on the Person class. -->  
+        <fl:listBinding beanId="people" class="org.smooks.fixedlength.Person" />  
+    </fl:reader>  
+
+</smooks-resource-list>
+----
+
+To execute this configuration:
+
+[source,java]
+----
+Smooks smooks = new Smooks(configStream);  
+JavaResult result = new JavaResult();  
+
+smooks.filterSource(new StreamSource(fixedLengthStream), result);  
+
+List<Person> people = (List<Person>) result.getBean("people");
+----
+
+Smooks also supports creation of maps from the fixed length record set:
+
+.smooks-config.xml
+[source,xml]
+----
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="https://www.smooks.org/xsd/smooks-2.0.xsd"
+                      xmlns:csv="https://www.smooks.org/xsd/smooks/csv-1.7.xsd">
+
+    <csv:reader fields="firstname,lastname,gender,age,country">
+        <csv:mapBinding beanId="people" class="org.smooks.csv.Person" keyField="firstname" />
+    </csv:reader>
+
+</smooks-resource-list>
+----
+
+The above configuration would produce a map of Person instances, keyed by the "firstname" value of each Person. It would be executed as follows:
+
+[source,java]
+----
+Smooks smooks = new Smooks(configStream);  
+JavaResult result = new JavaResult();  
+
+smooks.filterSource(new StreamSource(fixedLengthStream), result);  
+
+Map<String, Person> people = (Map<String, Person>) result.getBean("people");  
+
+Person tom = people.get("Tom");  
+Person mike = people.get("Maurice");
+----
+
+link:#virtual-object-models-maps--lists[Virtual Models] are also supported, so you can define the `+class+` attribute as a `+java.util.Map+` and have the fixed length field values bound into Map instances, which are in turn added to a list or a map.
+
+== Java API
+
+Programmatically configuring the FixedLengthReader on a Smooks instance is trivial. A number of options are available.
+
+=== Configuring Directly on the Smooks Instance
+
+The following code configures a Smooks instance with a FixedLengthReader for reading a people record set (see above), binding the record set into a List of Person instances:
+
+[source,java]
+----
+Smooks smooks = new Smooks();
+
+smooks.setReaderConfig(new FixedLengthReaderConfigurator("firstname,lastname,gender,age,country")
+                  .setBinding(new FixedLengthBinding("people", Person.class, CSVBindingType.LIST)));
+
+JavaResult result = new JavaResult();
+smooks.filterSource(new StreamSource(csvReader), result);
+
+List<Person> people = (List<Person>) result.getBean("people");
+----
+
+Of course configuring the Java Binding is totally optional. The Smooks instance could instead (or in conjunction with) be programmatically configured with other visitor for carrying out other forms of processing on the fixed length record set.
+
+=== Fixed length List and Map Binders
+
+If you're just interested in binding fixed length Records directly onto a List or Map of a Java type that reflects the data in your fixed length records, then you can use the `+FixedLengthListBinder+` or `+FixedLengthMapBinder+` classes.
+
+FixedLengthListBinder:
+
+[source,java]
+----
+// Note: The binder instance should be cached and reused...
+FixedLengthListBinder binder = new FixedLengthListBinder("firstname[10]?trim,lastname[10]?trim,gender[1],age[3]?trim,country[2]", Person.class);
+
+List<Person> people = binder.bind(fixedLengthStream);
+----
+
+FixedLengthMapBinder:
+
+[source,java]
+----
+// Note: The binder instance should be cached and reused...
+FixedLengthMapBinder binder = new FixedLengthMapBinder("firstname[10]?trim,lastname[10]?trim,gender[1],age[3]?trim,country[2]", Person.class, "firstname");
+
+Map<String, Person> people = binder.bind(fixedLengthStream);
+----
+
+If you need more control over the binding process, revert back to the lower level APIs:
+
+* link:#configuring-directly-on-the-smooks-instance[Configuring Directly on the Smooks Instance]
+* link:#java-binding[Java Binding]
+
+== Maven Coordinates
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>org.smooks.cartridges</groupId>
+    <artifactId>smooks-fixed-length-cartridge</artifactId>
+    <version>2.0.0-M3</version>
+</dependency>    
+----
+
+== XML Namespace
+
+....
+xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd"
+....
+// end::smooks-fixed-length-cartridge[]
