@@ -1,4 +1,4 @@
-= Smooks Fixed Length Cartridge
+= Smooks Fixed-Length Cartridge
 
 image:https://img.shields.io/maven-central/v/org.smooks.cartridges/smooks-fixed-length-cartridge[Maven Central]
 image:https://img.shields.io/nexus/s/org.smooks.cartridges/smooks-fixed-length-cartridge?server=https%3A%2F%2Foss.sonatype.org[Sonatype Nexus (Snapshots)]
@@ -14,7 +14,7 @@ A simple/basic fixed-length reader configuration:
 <smooks-resource-list xmlns="https://www.smooks.org/xsd/smooks-2.0.xsd"
                       xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd">  
 
-    <!-- Configure the Fixed length to parse the message into a stream of SAX events. -->  
+    <!-- Configure the fixed-length reader to parse the message into a stream of SAX events. -->
     <fl:reader fields="firstname[10],lastname[10],gender[1],age[2],country[2]" skipLines="1" />  
 
 </smooks-resource-list>
@@ -52,28 +52,20 @@ The above configuration will generate an event stream of the form:
 
 == Defining fields
 
-Fields are defined in the 'fields' attribute as a comma separated list
-of names and field lengths. The field lengths must be defined between
-the brackets after the field name (see the example above).
+Fields are defined in the 'fields' attribute as a comma separated list of names and field lengths. The field lengths must be defined between the brackets after the field name (see the example above).
 
-The field names must follow the same naming rules like XML element
-names:
+The field names must follow the same naming rules like XML element names:
 
 * Names can contain letters, numbers, and other characters
 * Names cannot start with a number or punctuation character
 * Names cannot start with the letters xml (or XML, or Xml, etc...)
 * Names cannot contain spaces
 
-By setting the `+rootElementName+` and `+recordElementName+` attributes you
-can modify the and element names. The same naming rules apply for these
-names.
+By setting the `+rootElementName+` and `+recordElementName+` attributes you can modify the and element names. The same naming rules apply for these names.
 
 === String manipulation functions
 
-String manipulation functions can be defined per field. These functions
-are executed before that the data is converted into SAX events. The
-functions are defined after the field length definitions and are
-optionally separated with a question mark.
+String manipulation functions can be defined per field. These functions are executed before that the data is converted into SAX events. The functions are defined after the field length definitions and are optionally separated with a question mark.
 
 [source,xml]
 ----
@@ -81,20 +73,28 @@ optionally separated with a question mark.
 <smooks-resource-list xmlns="https://www.smooks.org/xsd/smooks-2.0.xsd"
                       xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd">  
 
-    <!-- Configure the fixed length reader to parse the message into a stream of SAX events.  -->  
+    <!-- Configure the fixed-length reader to parse the message into a stream of SAX events.  -->
     <fl:reader fields="firstname[10]?trim,lastname[10]trim.capitalize,gender[1],age[2],country[2]" skipLines="1" />  
 
 </smooks-resource-list>
 ----
 
-Take a look at the link:#string-manipulation-functions-for-readers[#String manipulation functions for readers] chapter for the available functions and how the functions can be chained.
+The following functions are available:
+
+* `+upper_case+`: Returns the upper case version of the string.
+* `+lower_case+`: Returns the lower case version of the string.
+* `+cap_first+`: Returns the string with the very first word of the string capitalized.
+* `+uncap_first+`: Returns the string with the very first word of the string un-capitalized. The opposite to `+cap_first+`.
+* `+capitalize+`: Returns the string with all words capitalized.
+* `+trim+`: Returns the string without leading and trailing white-spaces.
+* `+left_trim+`: Returns the string without leading white-spaces.
+* `+right_trim+`: Returns the string without trailing white-spaces.
+
+Functions can be chained via the point separator: `+trim.upper_case+`. It depends on the reader how the functions are defined per field. Please look at the individual chapters of the readers for that information.
 
 === Ignoring Fields
 
-Characters ranges of a fixed length record can be ignored by specifying
-the `+$ignore$[10]+` token in the fields configuration value. You must
-specify the number of characters that need be ignored, just as a normal
-field.
+Characters ranges of a fixed-length record can be ignored by specifying the `+$ignore$[10]+` token in the fields configuration value. You must specify the number of characters that need be ignored, just as a normal field.
 
 .smooks-config.xml
 [source,xml]
@@ -108,14 +108,11 @@ field.
 </smooks-resource-list>
 ----
 
-== Binding fixed length Records to Java
+== Binding Fixed-Length Records to Java
 
-Smooks v1.2 has added support for making the binding of fixed length
-records to Java Objects a very trivial task. You don't need to use the
-Javabean Cartridge directly (i.e. Smooks main Java binding
-functionality).
+Smooks v1.2 has added support for making the binding of fixed-length records to Java Objects a very trivial task. You don't need to use the Javabean Cartridge directly (i.e. Smooks main Java binding functionality).
 
-A Persons fixed length record set such as:
+A Persons fixed-length record set such as:
 
 ....
 Tom       Fennelly  M 21 IE  
@@ -165,7 +162,7 @@ smooks.filterSource(new StreamSource(fixedLengthStream), result);
 List<Person> people = (List<Person>) result.getBean("people");
 ----
 
-Smooks also supports creation of maps from the fixed length record set:
+Smooks also supports creation of maps from the fixed-length record set:
 
 .smooks-config.xml
 [source,xml]
@@ -196,7 +193,7 @@ Person tom = people.get("Tom");
 Person mike = people.get("Maurice");
 ----
 
-link:#virtual-object-models-maps--lists[Virtual Models] are also supported, so you can define the `+class+` attribute as a `+java.util.Map+` and have the fixed length field values bound into Map instances, which are in turn added to a list or a map.
+link:#virtual-object-models-maps--lists[Virtual Models] are also supported, so you can define the `+class+` attribute as a `+java.util.Map+` and have the fixed-length field values bound into Map instances, which are in turn added to a list or a map.
 
 == Java API
 
@@ -219,11 +216,11 @@ smooks.filterSource(new StreamSource(csvReader), result);
 List<Person> people = (List<Person>) result.getBean("people");
 ----
 
-Of course configuring the Java Binding is totally optional. The Smooks instance could instead (or in conjunction with) be programmatically configured with other visitor for carrying out other forms of processing on the fixed length record set.
+Of course configuring the Java Binding is totally optional. The Smooks instance could instead (or in conjunction with) be programmatically configured with other visitor for carrying out other forms of processing on the fixed-length record set.
 
-=== Fixed length List and Map Binders
+=== Fixed-Length List & Map Binders
 
-If you're just interested in binding fixed length Records directly onto a List or Map of a Java type that reflects the data in your fixed length records, then you can use the `+FixedLengthListBinder+` or `+FixedLengthMapBinder+` classes.
+If you're just interested in binding fixed-length records directly onto a List or Map of a Java type that reflects the data in your fixed-length records, then you can use the `+FixedLengthListBinder+` or `+FixedLengthMapBinder+` classes.
 
 FixedLengthListBinder:
 
@@ -268,3 +265,9 @@ If you need more control over the binding process, revert back to the lower leve
 xmlns:fl="https://www.smooks.org/xsd/smooks/fixed-length-1.4.xsd"
 ....
 // end::smooks-fixed-length-cartridge[]
+
+== License
+
+Smooks Fixed-Length Cartridge is open source and licensed under the terms of the Apache License Version 2.0, or the GNU Lesser General Public License version 3.0 or later. You may use Smooks Fixed-Length Cartridge according to either of these licenses as is most appropriate for your project.
+
+`+SPDX-License-Identifier: Apache-2.0 OR LGPL-3.0-or-later+`
