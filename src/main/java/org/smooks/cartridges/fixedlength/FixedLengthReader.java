@@ -247,9 +247,8 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
             Bean bean;
 
             if(bindingType.get().equals(FixedLengthBindingType.LIST)) {
-                Bean listBean = new Bean(ArrayList.class, bindBeanId.get(), "#document");
-                listBean.setRegistry(registry);
-                
+                Bean listBean = new Bean(ArrayList.class, bindBeanId.get(), "#document", registry);
+
                 bean = listBean.newBean(bindBeanClass.get(), recordElementName);
                 listBean.bindTo(bean);
                 addFieldBindings(bean);
@@ -262,12 +261,9 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
                 assertValidFieldName(bindMapKeyField.get());
 
-                Bean mapBean = new Bean(LinkedHashMap.class, bindBeanId.get(), "#document");
-                mapBean.setRegistry(registry);
-                
-                Bean recordBean = new Bean(bindBeanClass.get(), RECORD_BEAN, recordElementName);
-                recordBean.setRegistry(registry);
-                
+                Bean mapBean = new Bean(LinkedHashMap.class, bindBeanId.get(), "#document", registry);
+                Bean recordBean = new Bean(bindBeanClass.get(), RECORD_BEAN, recordElementName, registry);
+
                 MapBindingWiringVisitor wiringVisitor = new MapBindingWiringVisitor(bindMapKeyField.get(), bindBeanId.get());
 
                 addFieldBindings(recordBean);
@@ -276,9 +272,8 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
                 visitorBindings.addAll(recordBean.addVisitors());
                 visitorBindings.add(new DefaultContentHandlerBinding<>(wiringVisitor, recordElementName, null, registry));
             } else {
-                bean = new Bean(bindBeanClass.get(), bindBeanId.get(), recordElementName);
-                bean.setRegistry(registry);
-                
+                bean = new Bean(bindBeanClass.get(), bindBeanId.get(), recordElementName, registry);
+
                 addFieldBindings(bean);
                 visitorBindings.addAll(bean.addVisitors());
             }
