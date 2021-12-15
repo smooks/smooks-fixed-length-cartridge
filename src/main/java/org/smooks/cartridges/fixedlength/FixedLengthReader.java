@@ -42,8 +42,6 @@
  */
 package org.smooks.cartridges.fixedlength;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smooks.api.ExecutionContext;
@@ -333,7 +331,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 	
 	        // Start the document and add the root element...
 	        contentHandler.startDocument();
-	        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY, EMPTY_ATTRIBS);
+	        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, "", EMPTY_ATTRIBS);
 	
 	        // Output each of the Fixed Length line entries...
 	        while ((flRecord = flLineReader.readLine()) != null) {
@@ -369,7 +367,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 	            	}
 	            }
 	
-	            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, StringUtils.EMPTY, attrs);
+	            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, "", attrs);
 	
 	            // Loops through fields
 	            int fieldLengthTotal = 0;
@@ -398,7 +396,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 	                        recordAttrs.addAttribute(XMLConstants.NULL_NS_URI, truncatedAttributeName, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
 	                	}
 	
-	                    contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY, recordAttrs);
+	                    contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, "", recordAttrs);
 	
 	                    // If not truncated then set the element data
 	                    if(!truncated) {
@@ -413,7 +411,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 	                    	}
 	            		}
 	
-	                    contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY);
+	                    contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, "");
 	        		}
 	
 	                fieldLengthTotal += fieldLength;
@@ -424,7 +422,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 	                contentHandler.characters(INDENT_1, 0, 1);
 	            }
 	
-	            contentHandler.endElement(null, recordElementName, StringUtils.EMPTY);
+	            contentHandler.endElement(null, recordElementName, "");
 	
 	
 	        }
@@ -434,7 +432,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 	        }
 	
 	        // Close out the "fixedlength-set" root element and end the document..
-	        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY);
+	        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, "");
 	        contentHandler.endDocument();
         } finally {
         	// These properties need to be reset for every execution (e.g. when reader is pooled).
@@ -587,11 +585,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
 		@Override
 		public String toString() {
-			ToStringBuilder builder = new ToStringBuilder(this);
-			builder.append("name", name)
-				   .append("length", length)
-                   .append("stringFunctionExecutor", stringFunctionExecutor);
-			return builder.toString();
+            return String.format("%s[name=%s,length=%s,stringFunctionExecutor=%s]", this, name, length, stringFunctionExecutor);
 		}
     }
 
@@ -624,7 +618,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
         }
 
         public boolean consumes(Object object) {
-            return keyExtractor.getExpression().indexOf(object.toString()) != -1;
+            return keyExtractor.getExpression().contains(object.toString());
         }
     }
 }
