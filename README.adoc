@@ -255,7 +255,7 @@ If you need more control over the binding process, revert back to the lower leve
 <dependency>
     <groupId>org.smooks.cartridges</groupId>
     <artifactId>smooks-fixed-length-cartridge</artifactId>
-    <version>2.0.0-RC2</version>
+    <version>2.0.0-RC3</version>
 </dependency>    
 ----
 
