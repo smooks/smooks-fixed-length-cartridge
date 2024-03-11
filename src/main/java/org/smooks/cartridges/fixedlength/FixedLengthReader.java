@@ -6,35 +6,35 @@
  * %%
  * Licensed under the terms of the Apache License Version 2.0, or
  * the GNU Lesser General Public License version 3.0 or later.
- * 
+ *
  * SPDX-License-Identifier: Apache-2.0 OR LGPL-3.0-or-later
- * 
+ *
  * ======================================================================
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * ======================================================================
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -64,6 +64,7 @@ import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
 
 import jakarta.annotation.PostConstruct;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.xml.XMLConstants;
@@ -93,7 +94,7 @@ import java.util.*;
  *     &lt;/fl:reader&gt;
  *
  * &lt;/smooks-resource-list&gt;</pre>
- *
+ * <p>
  * <p/>
  * To maintain a {@link java.util.List} of binding instances in memory:
  * <pre>
@@ -105,7 +106,7 @@ import java.util.*;
  *     &lt;/fl:reader&gt;
  *
  * &lt;/smooks-resource-list&gt;</pre>
- *
+ * <p>
  * <p/>
  * To maintain a {@link Map} of binding instances in memory:
  * <pre>
@@ -172,18 +173,18 @@ import java.util.*;
  */
 public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FixedLengthReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FixedLengthReader.class);
 
     private static final AttributesImpl EMPTY_ATTRIBS = new AttributesImpl();
     private static final String IGNORE_FIELD = "$ignore$";
     private static final char FUNCTION_SEPARATOR = '?';
 
-    private static char[] INDENT_LF = new char[] {'\n'};
-    private static char[] INDENT_1  = new char[] {'\t'};
-    private static char[] INDENT_2  = new char[] {'\t', '\t'};
+    private static char[] INDENT_LF = new char[]{'\n'};
+    private static char[] INDENT_1 = new char[]{'\t'};
+    private static char[] INDENT_2 = new char[]{'\t', '\t'};
 
     private ContentHandler contentHandler;
-	private ExecutionContext execContext;
+    private ExecutionContext execContext;
 
     @Inject
     @Named("fields")
@@ -232,7 +233,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
     @Inject
     private Registry registry;
-    
+
     private static final String RECORD_BEAN = "flRecordBean";
 
     public boolean initialized = false;
@@ -241,10 +242,10 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
     public List<ContentHandlerBinding<Visitor>> addVisitors() {
         List<ContentHandlerBinding<Visitor>> visitorBindings = new ArrayList<>();
         initialize();
-    	if(bindBeanId.isPresent() && bindBeanClass.isPresent()) {
+        if (bindBeanId.isPresent() && bindBeanClass.isPresent()) {
             Bean bean;
 
-            if(bindingType.get().equals(FixedLengthBindingType.LIST)) {
+            if (bindingType.get().equals(FixedLengthBindingType.LIST)) {
                 Bean listBean = new Bean(ArrayList.class, bindBeanId.get(), "#document", registry);
 
                 bean = listBean.newBean(bindBeanClass.get(), recordElementName);
@@ -252,8 +253,8 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
                 addFieldBindings(bean);
 
                 visitorBindings.addAll(listBean.addVisitors());
-            } else if(bindingType.get().equals(FixedLengthBindingType.MAP)) {
-                if(!bindMapKeyField.isPresent()) {
+            } else if (bindingType.get().equals(FixedLengthBindingType.MAP)) {
+                if (!bindMapKeyField.isPresent()) {
                     throw new SmooksConfigException("FixedLength 'MAP' Binding must specify a 'keyField' property on the binding configuration.");
                 }
 
@@ -268,7 +269,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
                 visitorBindings.addAll(mapBean.addVisitors());
                 visitorBindings.addAll(recordBean.addVisitors());
-                visitorBindings.add(new DefaultContentHandlerBinding<>(wiringVisitor, recordElementName, null, registry));
+                visitorBindings.add(new DefaultContentHandlerBinding<>(wiringVisitor, recordElementName, registry));
             } else {
                 bean = new Bean(bindBeanClass.get(), bindBeanId.get(), recordElementName, registry);
 
@@ -276,8 +277,8 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
                 visitorBindings.addAll(bean.addVisitors());
             }
         }
-    	
-    	return visitorBindings;
+
+        return visitorBindings;
     }
 
     private void addFieldBindings(Bean bean) {
@@ -290,156 +291,156 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
         }
     }
 
-	/* (non-Javadoc)
-	 * @see org.smooks.xml.SmooksXMLReader#setExecutionContext(org.smooks.container.ExecutionContext)
-	 */
-	public void setExecutionContext(ExecutionContext request) {
-		this.execContext = request;
-	}
+    /* (non-Javadoc)
+     * @see org.smooks.xml.SmooksXMLReader#setExecutionContext(org.smooks.container.ExecutionContext)
+     */
+    public void setExecutionContext(ExecutionContext request) {
+        this.execContext = request;
+    }
 
-	@PostConstruct
-	public void initialize() {
-		buildFields();
-	}
+    @PostConstruct
+    public void initialize() {
+        buildFields();
+    }
 
 
-	/* (non-Javadoc)
-	 * @see org.xml.sax.XMLReader#parse(org.xml.sax.InputSource)
-	 */
-	public void parse(InputSource flInputSource) throws IOException, SAXException {
-        if(contentHandler == null) {
+    /* (non-Javadoc)
+     * @see org.xml.sax.XMLReader#parse(org.xml.sax.InputSource)
+     */
+    public void parse(InputSource flInputSource) throws IOException, SAXException {
+        if (contentHandler == null) {
             throw new IllegalStateException("'contentHandler' not set.  Cannot parse Fixed Length stream.");
         }
-        if(execContext == null) {
+        if (execContext == null) {
             throw new IllegalStateException("'execContext' not set.  Cannot parse Fixed Length stream.");
         }
 
         try {
-	        Reader flStreamReader;
-			BufferedReader flLineReader;
-	        String flRecord;
-	        int lineNumber = 0;
-	
-			// Get a reader for the Fixed Length source...
-	        flStreamReader = flInputSource.getCharacterStream();
-	        if(flStreamReader == null) {
-	            flStreamReader = new InputStreamReader(flInputSource.getByteStream(), encoding);
-	        }
-	
-	        // Create the Fixed Length line reader...
-	        flLineReader = new BufferedReader(flStreamReader);
-	
-	        // Start the document and add the root element...
-	        contentHandler.startDocument();
-	        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, "", EMPTY_ATTRIBS);
-	
-	        // Output each of the Fixed Length line entries...
-	        while ((flRecord = flLineReader.readLine()) != null) {
-	        	lineNumber++; // First line is line "1"
-	
-	        	if (lineNumber <= this.skipLines) {
-	        		continue;
-	        	}
-	        	boolean invalidLength = flRecord.length() < totalFieldLenght;
-	        	if(invalidLength && strict) {
-	        		if(LOGGER.isWarnEnabled()) {
-	            		LOGGER.debug("[WARNING-FIXEDLENGTH] Fixed Length line #" + lineNumber + " is invalid.  The line doesn't contain enough characters to fill all the fields. This line is skipped.");
-	            	}
-	        		continue;
-	        	}
-	
-	        	char[] recordChars = flRecord.toCharArray();
-	
-	        	if(indent) {
-	                contentHandler.characters(INDENT_LF, 0, 1);
-	                contentHandler.characters(INDENT_1, 0, 1);
-	            }
-	
-	            AttributesImpl attrs = EMPTY_ATTRIBS;
-	            // Add a lineNumber ID
-	            if (this.lineNumber || invalidLength) {
-	            	attrs = new AttributesImpl();
-	            	if(this.lineNumber) {
-	            		attrs.addAttribute(XMLConstants.NULL_NS_URI, lineNumberAttributeName, lineNumberAttributeName, "xs:int", Integer.toString(lineNumber));
-	            	}
-	            	if(invalidLength) {
-	            		attrs.addAttribute(XMLConstants.NULL_NS_URI, truncatedAttributeName, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
-	            	}
-	            }
-	
-	            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, "", attrs);
-	
-	            // Loops through fields
-	            int fieldLengthTotal = 0;
-	        	for(int i = 0; i < flFields.length; i++) {
-	           		// Field name local to the loop
-	                String fieldName = fields[i].getName();
-	                // Field length local to the loop
-	                int fieldLength = fields[i].getLength();
-	
-	                StringFunctionExecutor stringFunctionExecutor = fields[i].getStringFunctionExecutor();
-	
-	                if(!fields[i].ignore()) {
-	                	if(indent) {
-	                        contentHandler.characters(INDENT_LF, 0, 1);
-	                        contentHandler.characters(INDENT_2, 0, 2);
-	                    }
-	
-	                	// Check that there are enough characters in the string
-	                	boolean truncated = fieldLengthTotal + fieldLength > flRecord.length();
-	
-	                	AttributesImpl recordAttrs = EMPTY_ATTRIBS;
-	
-	                	//If truncated then set the truncated attribute
-	                	if(truncated) {
-	                		recordAttrs = new AttributesImpl();
-	                        recordAttrs.addAttribute(XMLConstants.NULL_NS_URI, truncatedAttributeName, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
-	                	}
-	
-	                    contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, "", recordAttrs);
-	
-	                    // If not truncated then set the element data
-	                    if(!truncated) {
-	                    	if(stringFunctionExecutor == null) {
-	                    		contentHandler.characters(recordChars, fieldLengthTotal, fieldLength);
-	                    	} else {
-	                    		String value = flRecord.substring(fieldLengthTotal, fieldLengthTotal + fieldLength);
-	
-	                    		value = stringFunctionExecutor.execute(value);
-	
-	                    		contentHandler.characters(value.toCharArray(), 0, value.length());
-	                    	}
-	            		}
-	
-	                    contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, "");
-	        		}
-	
-	                fieldLengthTotal += fieldLength;
-	        	}
-	
-	        	if(indent) {
-	                contentHandler.characters(INDENT_LF, 0, 1);
-	                contentHandler.characters(INDENT_1, 0, 1);
-	            }
-	
-	            contentHandler.endElement(null, recordElementName, "");
-	
-	
-	        }
-	
-	        if(indent) {
-	            contentHandler.characters(INDENT_LF, 0, 1);
-	        }
-	
-	        // Close out the "fixedlength-set" root element and end the document..
-	        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, "");
-	        contentHandler.endDocument();
+            Reader flStreamReader;
+            BufferedReader flLineReader;
+            String flRecord;
+            int lineNumber = 0;
+
+            // Get a reader for the Fixed Length source...
+            flStreamReader = flInputSource.getCharacterStream();
+            if (flStreamReader == null) {
+                flStreamReader = new InputStreamReader(flInputSource.getByteStream(), encoding);
+            }
+
+            // Create the Fixed Length line reader...
+            flLineReader = new BufferedReader(flStreamReader);
+
+            // Start the document and add the root element...
+            contentHandler.startDocument();
+            contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, "", EMPTY_ATTRIBS);
+
+            // Output each of the Fixed Length line entries...
+            while ((flRecord = flLineReader.readLine()) != null) {
+                lineNumber++; // First line is line "1"
+
+                if (lineNumber <= this.skipLines) {
+                    continue;
+                }
+                boolean invalidLength = flRecord.length() < totalFieldLenght;
+                if (invalidLength && strict) {
+                    if (LOGGER.isWarnEnabled()) {
+                        LOGGER.debug("[WARNING-FIXEDLENGTH] Fixed Length line #" + lineNumber + " is invalid.  The line doesn't contain enough characters to fill all the fields. This line is skipped.");
+                    }
+                    continue;
+                }
+
+                char[] recordChars = flRecord.toCharArray();
+
+                if (indent) {
+                    contentHandler.characters(INDENT_LF, 0, 1);
+                    contentHandler.characters(INDENT_1, 0, 1);
+                }
+
+                AttributesImpl attrs = EMPTY_ATTRIBS;
+                // Add a lineNumber ID
+                if (this.lineNumber || invalidLength) {
+                    attrs = new AttributesImpl();
+                    if (this.lineNumber) {
+                        attrs.addAttribute(XMLConstants.NULL_NS_URI, lineNumberAttributeName, lineNumberAttributeName, "xs:int", Integer.toString(lineNumber));
+                    }
+                    if (invalidLength) {
+                        attrs.addAttribute(XMLConstants.NULL_NS_URI, truncatedAttributeName, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
+                    }
+                }
+
+                contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, "", attrs);
+
+                // Loops through fields
+                int fieldLengthTotal = 0;
+                for (int i = 0; i < flFields.length; i++) {
+                    // Field name local to the loop
+                    String fieldName = fields[i].getName();
+                    // Field length local to the loop
+                    int fieldLength = fields[i].getLength();
+
+                    StringFunctionExecutor stringFunctionExecutor = fields[i].getStringFunctionExecutor();
+
+                    if (!fields[i].ignore()) {
+                        if (indent) {
+                            contentHandler.characters(INDENT_LF, 0, 1);
+                            contentHandler.characters(INDENT_2, 0, 2);
+                        }
+
+                        // Check that there are enough characters in the string
+                        boolean truncated = fieldLengthTotal + fieldLength > flRecord.length();
+
+                        AttributesImpl recordAttrs = EMPTY_ATTRIBS;
+
+                        //If truncated then set the truncated attribute
+                        if (truncated) {
+                            recordAttrs = new AttributesImpl();
+                            recordAttrs.addAttribute(XMLConstants.NULL_NS_URI, truncatedAttributeName, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
+                        }
+
+                        contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, "", recordAttrs);
+
+                        // If not truncated then set the element data
+                        if (!truncated) {
+                            if (stringFunctionExecutor == null) {
+                                contentHandler.characters(recordChars, fieldLengthTotal, fieldLength);
+                            } else {
+                                String value = flRecord.substring(fieldLengthTotal, fieldLengthTotal + fieldLength);
+
+                                value = stringFunctionExecutor.execute(value);
+
+                                contentHandler.characters(value.toCharArray(), 0, value.length());
+                            }
+                        }
+
+                        contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, "");
+                    }
+
+                    fieldLengthTotal += fieldLength;
+                }
+
+                if (indent) {
+                    contentHandler.characters(INDENT_LF, 0, 1);
+                    contentHandler.characters(INDENT_1, 0, 1);
+                }
+
+                contentHandler.endElement(null, recordElementName, "");
+
+
+            }
+
+            if (indent) {
+                contentHandler.characters(INDENT_LF, 0, 1);
+            }
+
+            // Close out the "fixedlength-set" root element and end the document..
+            contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, "");
+            contentHandler.endDocument();
         } finally {
-        	// These properties need to be reset for every execution (e.g. when reader is pooled).
-        	contentHandler = null;
-        	execContext = null;
+            // These properties need to be reset for every execution (e.g. when reader is pooled).
+            contentHandler = null;
+            execContext = null;
         }
-	}
+    }
 
     public void setContentHandler(ContentHandler contentHandler) {
         this.contentHandler = contentHandler;
@@ -450,16 +451,16 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
     }
 
     private void assertValidFieldName(String fieldName) {
-        for(Field field : fields) {
-            if(field.getName().equals(fieldName)) {
+        for (Field field : fields) {
+            if (field.getName().equals(fieldName)) {
                 return;
             }
         }
 
         String fieldNames = "";
-        for(Field field : fields) {
-        	if(!field.ignore()) {
-                if(fieldNames.length() > 0) {
+        for (Field field : fields) {
+            if (!field.ignore()) {
+                if (fieldNames.length() > 0) {
                     fieldNames += ", ";
                 }
                 fieldNames += field.getName();
@@ -469,37 +470,38 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
         throw new SmooksConfigException("Invalid field name '" + fieldName + "'.  Valid names: [" + fieldNames + "].");
     }
 
-	private void buildFields() {
-		// Parse input fields to extract names and lengths
+    private void buildFields() {
+        // Parse input fields to extract names and lengths
         Field[] fields = new Field[this.flFields.length];
         int totalFieldLenght = 0;
-    	for(int i = 0; i < this.flFields.length; i++) {
-    		// Extract informations about the field
+        for (int i = 0; i < this.flFields.length; i++) {
+            // Extract informations about the field
             String fieldInfos = this.flFields[i].trim();
             // Extract name of the field (before bracket)
             String fieldName = fieldInfos.substring(0, fieldInfos.lastIndexOf('['));
             // Extract length of the field (between brackets)
             int fieldLength = Integer.parseInt(fieldInfos.substring(fieldInfos.lastIndexOf('[') + 1, fieldInfos.lastIndexOf(']')));
 
-            String functionDefinition = fieldInfos.substring(fieldInfos.lastIndexOf(']')+1);
+            String functionDefinition = fieldInfos.substring(fieldInfos.lastIndexOf(']') + 1);
 
-            if(functionDefinition.length() != 0 && functionDefinition.charAt(0) == FUNCTION_SEPARATOR) {
+            if (functionDefinition.length() != 0 && functionDefinition.charAt(0) == FUNCTION_SEPARATOR) {
                 functionDefinition = functionDefinition.substring(1);
             }
 
             StringFunctionExecutor stringFunctionExecutor = null;
-            if(functionDefinition.length() != 0) {
-            	stringFunctionExecutor = StringFunctionExecutor.getInstance(functionDefinition);
+            if (functionDefinition.length() != 0) {
+                stringFunctionExecutor = StringFunctionExecutor.getInstance(functionDefinition);
             }
 
             fields[i] = new Field(fieldName, fieldLength, stringFunctionExecutor);
 
             totalFieldLenght += fieldLength;
-    	}
+        }
 
-    	this.fields = fields;
-    	this.totalFieldLenght = totalFieldLenght;
-	}
+        this.fields = fields;
+        this.totalFieldLenght = totalFieldLenght;
+    }
+
     /****************************************************************************
      *
      * The following methods are currently unimplemented...
@@ -551,42 +553,42 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
     private class Field {
 
-    	private final String name;
+        private final String name;
 
-    	private final int length;
+        private final int length;
 
-    	private final boolean ignore;
+        private final boolean ignore;
 
-    	private final StringFunctionExecutor stringFunctionExecutor;
+        private final StringFunctionExecutor stringFunctionExecutor;
 
         public Field(String name, int length, StringFunctionExecutor stringFunctionExecutor) {
-			this.name = name;
-			this.length = length;
-			this.stringFunctionExecutor = stringFunctionExecutor;
+            this.name = name;
+            this.length = length;
+            this.stringFunctionExecutor = stringFunctionExecutor;
 
-			ignore = IGNORE_FIELD.equals(name);
-		}
+            ignore = IGNORE_FIELD.equals(name);
+        }
 
-		public String getName() {
-			return name;
-		}
+        public String getName() {
+            return name;
+        }
 
-		public int getLength() {
-			return length;
-		}
+        public int getLength() {
+            return length;
+        }
 
-		public boolean ignore() {
-			return ignore;
-		}
+        public boolean ignore() {
+            return ignore;
+        }
 
-		public StringFunctionExecutor getStringFunctionExecutor() {
-			return stringFunctionExecutor;
-		}
+        public StringFunctionExecutor getStringFunctionExecutor() {
+            return stringFunctionExecutor;
+        }
 
-		@Override
-		public String toString() {
+        @Override
+        public String toString() {
             return String.format("%s[name=%s,length=%s,stringFunctionExecutor=%s]", this, name, length, stringFunctionExecutor);
-		}
+        }
     }
 
     private static class MapBindingWiringVisitor implements AfterVisitor, Consumer {
@@ -598,20 +600,20 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
             keyExtractor.setExpression(RECORD_BEAN + "." + bindKeyField);
             this.mapBindingKey = mapBindingKey;
         }
-        
+
         @Override
         public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
             wireObject(executionContext);
         }
 
 
-		private void wireObject(ExecutionContext executionContext) {
-			BeanContext beanContext = executionContext.getBeanContext();
+        private void wireObject(ExecutionContext executionContext) {
+            BeanContext beanContext = executionContext.getBeanContext();
             Map<String, Object> beanMap = beanContext.getBeanMap();
             Object key = keyExtractor.getValue(beanMap);
 
             @SuppressWarnings("unchecked") //TODO: Optimize to use the BeanId object
-            Map<Object, Object> map =  (Map<Object, Object>) beanContext.getBean(mapBindingKey);
+            Map<Object, Object> map = (Map<Object, Object>) beanContext.getBean(mapBindingKey);
             Object record = beanContext.getBean(RECORD_BEAN);
 
             map.put(key, record);
