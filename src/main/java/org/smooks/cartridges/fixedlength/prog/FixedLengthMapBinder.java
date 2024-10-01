@@ -47,9 +47,9 @@ import org.smooks.assertion.AssertArgument;
 import org.smooks.cartridges.fixedlength.FixedLengthBinding;
 import org.smooks.cartridges.fixedlength.FixedLengthBindingType;
 import org.smooks.cartridges.fixedlength.FixedLengthReaderConfigurator;
-import org.smooks.io.payload.JavaResult;
+import org.smooks.io.sink.JavaSink;
+import org.smooks.io.source.ReaderSource;
 
-import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -80,7 +80,7 @@ public class FixedLengthMapBinder {
     private String beanId = UUID.randomUUID().toString();
     private Smooks smooks;
 
-    public FixedLengthMapBinder(String fields, Class recordType, String keyField) {
+    public FixedLengthMapBinder(String fields, Class<?> recordType, String keyField) {
         AssertArgument.isNotNullAndNotEmpty(fields, "fields");
         AssertArgument.isNotNull(recordType, "recordType");
         AssertArgument.isNotNullAndNotEmpty(keyField, "keyField");
@@ -93,11 +93,11 @@ public class FixedLengthMapBinder {
     public Map bind(Reader fixedLengthStream) {
         AssertArgument.isNotNull(fixedLengthStream, "fixedLengthStream");
 
-        JavaResult javaResult = new JavaResult();
+        JavaSink javaSink = new JavaSink();
 
-        smooks.filterSource(new StreamSource(fixedLengthStream), javaResult);
+        smooks.filterSource(new ReaderSource<>(fixedLengthStream), javaSink);
 
-        return (Map) javaResult.getBean(beanId);
+        return (Map) javaSink.getBean(beanId);
     }
 
     public Map bind(InputStream fixedLengthStream) {

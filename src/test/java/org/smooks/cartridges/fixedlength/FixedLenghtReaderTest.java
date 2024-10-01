@@ -47,10 +47,10 @@ import org.smooks.Smooks;
 import org.smooks.api.ExecutionContext;
 import org.smooks.api.delivery.Filter;
 import org.smooks.engine.resource.config.ParameterAccessor;
-import org.smooks.io.payload.JavaResult;
+import org.smooks.io.sink.JavaSink;
+import org.smooks.io.source.StreamSource;
 import org.smooks.support.SmooksUtil;
 
-import javax.xml.transform.stream.StreamSource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,11 +81,11 @@ public class FixedLenghtReaderTest {
     }
 
     private void test_01_map_binding(Smooks smooks) {
-        JavaResult result = new JavaResult();
-        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("/input-message-01.txt")), result);
+        JavaSink sink = new JavaSink();
+        smooks.filterSource(new StreamSource<>(getClass().getResourceAsStream("/input-message-01.txt")), sink);
 
         @SuppressWarnings("unchecked")
-        Map<String, Map<String, String>> people = (Map<String, Map<String, String>>) result.getBean("people");
+        Map<String, Map<String, String>> people = (Map<String, Map<String, String>>) sink.getBean("people");
         Map<String, String> person;
 
         person = people.get("Maurice");
@@ -121,11 +121,11 @@ public class FixedLenghtReaderTest {
     }
 
     private void test_01_list_binding(Smooks smooks) {
-        JavaResult result = new JavaResult();
-        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("/input-message-01.txt")), result);
+        JavaSink sink = new JavaSink();
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("/input-message-01.txt")), sink);
 
         @SuppressWarnings("unchecked")
-        List<Map<String, String>> people = (List<Map<String, String>>) result.getBean("people");
+        List<Map<String, String>> people = (List<Map<String, String>>) sink.getBean("people");
         Map<String, String> person;
 
         person = people.get(0);
@@ -161,11 +161,11 @@ public class FixedLenghtReaderTest {
     }
 
     private void test_01_single_binding(Smooks smooks) {
-        JavaResult result = new JavaResult();
-        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("/input-message-01.txt")), result);
+        JavaSink sink = new JavaSink();
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("/input-message-01.txt")), sink);
 
         @SuppressWarnings("unchecked")
-        Map<String, String> person = (Map<String, String>) result.getBean("person");
+        Map<String, String> person = (Map<String, String>) sink.getBean("person");
 
         assertEquals("Sanne", person.get("firstname"));
         assertEquals("Fries", person.get("lastname"));

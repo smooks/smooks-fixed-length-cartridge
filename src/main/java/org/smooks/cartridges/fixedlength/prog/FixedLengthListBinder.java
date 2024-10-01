@@ -47,9 +47,9 @@ import org.smooks.assertion.AssertArgument;
 import org.smooks.cartridges.fixedlength.FixedLengthBinding;
 import org.smooks.cartridges.fixedlength.FixedLengthBindingType;
 import org.smooks.cartridges.fixedlength.FixedLengthReaderConfigurator;
-import org.smooks.io.payload.JavaResult;
+import org.smooks.io.sink.JavaSink;
+import org.smooks.io.source.ReaderSource;
 
-import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -92,11 +92,11 @@ public class FixedLengthListBinder {
     public List bind(Reader fixedLengthStream) {
         AssertArgument.isNotNull(fixedLengthStream, "fixedLengthStream");
 
-        JavaResult javaResult = new JavaResult();
+        JavaSink javaSink = new JavaSink();
 
-        smooks.filterSource(new StreamSource(fixedLengthStream), javaResult);
+        smooks.filterSource(new ReaderSource<>(fixedLengthStream), javaSink);
 
-        return (List) javaResult.getBean(beanId);
+        return (List) javaSink.getBean(beanId);
     }
 
     public List bind(InputStream fixedLengthStream) {
