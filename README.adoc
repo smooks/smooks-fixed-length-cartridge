@@ -155,11 +155,11 @@ To execute this configuration:
 [source,java]
 ----
 Smooks smooks = new Smooks(configStream);  
-JavaResult result = new JavaResult();  
+JavaSink sink = new JavaSink();
 
-smooks.filterSource(new StreamSource(fixedLengthStream), result);  
+smooks.filterSource(new StreamSource(fixedLengthStream), sink);
 
-List<Person> people = (List<Person>) result.getBean("people");
+List<Person> people = (List<Person>) sink.getBean("people");
 ----
 
 Smooks also supports creation of maps from the fixed-length record set:
@@ -183,11 +183,11 @@ The above configuration would produce a map of Person instances, keyed by the "f
 [source,java]
 ----
 Smooks smooks = new Smooks(configStream);  
-JavaResult result = new JavaResult();  
+JavaSink sink = new JavaSink();
 
-smooks.filterSource(new StreamSource(fixedLengthStream), result);  
+smooks.filterSource(new StreamSource(fixedLengthStream), sink);
 
-Map<String, Person> people = (Map<String, Person>) result.getBean("people");  
+Map<String, Person> people = (Map<String, Person>) sink.getBean("people");
 
 Person tom = people.get("Tom");  
 Person mike = people.get("Maurice");
@@ -210,10 +210,10 @@ Smooks smooks = new Smooks();
 smooks.setReaderConfig(new FixedLengthReaderConfigurator("firstname,lastname,gender,age,country")
                   .setBinding(new FixedLengthBinding("people", Person.class, CSVBindingType.LIST)));
 
-JavaResult result = new JavaResult();
-smooks.filterSource(new StreamSource(csvReader), result);
+JavaSink sink = new JavaSink();
+smooks.filterSource(new ReaderSource(csvReader), sink);
 
-List<Person> people = (List<Person>) result.getBean("people");
+List<Person> people = (List<Person>) sink.getBean("people");
 ----
 
 Of course configuring the Java Binding is totally optional. The Smooks instance could instead (or in conjunction with) be programmatically configured with other visitor for carrying out other forms of processing on the fixed-length record set.
@@ -255,7 +255,7 @@ If you need more control over the binding process, revert back to the lower leve
 <dependency>
     <groupId>org.smooks.cartridges</groupId>
     <artifactId>smooks-fixed-length-cartridge</artifactId>
-    <version>2.0.0-RC4</version>
+    <version>2.0.0</version>
 </dependency>    
 ----
 
