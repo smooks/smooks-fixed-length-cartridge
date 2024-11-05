@@ -1,0 +1,36 @@
+name: Reference latest Smooks artifacts
+
+on:
+  schedule:
+    - cron: '30 14 * * 0'
+  workflow_dispatch:
+
+permissions: { }
+jobs:
+  build:
+    if: github.repository == 'apache/camel'
+    permissions:
+      contents: write
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '17' ]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: mvn versions:use-latest-snapshots -Dincludes=org.smooks*
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          base: MASTER
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: reference latest Smooks artifacts"
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: true
+          branch: ref-latest-smooks-artifacts
+          title: "Reference latest Smooks artifacts"
+          reviewers: tfennelly,cjmamo
