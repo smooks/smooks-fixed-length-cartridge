@@ -46,7 +46,7 @@ import org.junit.Test;
 import org.smooks.Smooks;
 import org.smooks.api.ExecutionContext;
 import org.smooks.api.delivery.Filter;
-import org.smooks.engine.resource.config.ParameterAccessor;
+import org.smooks.engine.resource.config.GlobalParamsResourceConfig;
 import org.smooks.io.sink.JavaSink;
 import org.smooks.io.source.StreamSource;
 import org.smooks.support.SmooksUtil;
@@ -236,7 +236,9 @@ public class FixedLenghtReaderTest {
     @Test
     public void test_04_programmatic_truncate() throws Exception {
         Smooks smooks = new Smooks();
-        ParameterAccessor.setParameter(Filter.CLOSE_EMPTY_ELEMENTS, "true", smooks);
+        GlobalParamsResourceConfig globalParamsResourceConfig = new GlobalParamsResourceConfig();
+        globalParamsResourceConfig.setParameter(Filter.CLOSE_EMPTY_ELEMENTS, "true");
+        smooks.getApplicationContext().getRegistry().registerObject(globalParamsResourceConfig);
 
         smooks.setReaderConfig(new FixedLengthReaderConfigurator(
                 "first[2],second[3],third[4]")
@@ -263,7 +265,9 @@ public class FixedLenghtReaderTest {
     @Test
     public void test_04_programmatic_truncate_line_number_diff_name() throws Exception {
         Smooks smooks = new Smooks();
-        ParameterAccessor.setParameter(Filter.CLOSE_EMPTY_ELEMENTS, "true", smooks);
+        GlobalParamsResourceConfig globalParamsResourceConfig = new GlobalParamsResourceConfig();
+        globalParamsResourceConfig.setParameter(Filter.CLOSE_EMPTY_ELEMENTS, "true");
+        smooks.getApplicationContext().getRegistry().registerObject(globalParamsResourceConfig);
 
         smooks.setReaderConfig(new FixedLengthReaderConfigurator(
                 "first[2],second[3],third[4]")
